@@ -366,10 +366,13 @@ public:
             case parse_state::body_to_eof:
             case parse_state::chunk_body:
             {
-                auto const body = parser.body();
-                boost::asio::write(out, chunk_encode(
-                    false, boost::asio::buffer(
-                        body.data(), body.size())));
+                if(! parser.is_complete())
+                {
+                    auto const body = parser.body();
+                    boost::asio::write(out, chunk_encode(
+                        false, boost::asio::buffer(
+                            body.data(), body.size())));
+                }
                 break;
             }
           
