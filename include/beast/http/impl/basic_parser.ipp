@@ -39,35 +39,10 @@ basic_parser(basic_parser<isRequest,
 template<bool isRequest, bool isDirect, class Derived>
 void
 basic_parser<isRequest, isDirect, Derived>::
-set_option(body_max_size const& o)
+skip_body()
 {
-    // VFALCO TODO
-    BOOST_ASSERT(false);
-}
-
-template<bool isRequest, bool isDirect, class Derived>
-void
-basic_parser<isRequest, isDirect, Derived>::
-set_option(header_max_size const& o)
-{
-    // VFALCO TODO
-    BOOST_ASSERT(false);
-}
-
-template<bool isRequest, bool isDirect, class Derived>
-void
-basic_parser<isRequest, isDirect, Derived>::
-set_option(skip_body const& opt)
-{
-    if(opt.value)
-    {
-        f_ |= flagSkipBody;
-        f_ &= ~flagHasBody;
-    }
-    else
-    {
-        f_ &= ~flagSkipBody;
-    }
+    BOOST_ASSERT(! got_some());
+    f_ |= flagSkipBody;
 }
 
 template<bool isRequest, bool isDirect, class Derived>

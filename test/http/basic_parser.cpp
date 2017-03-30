@@ -224,7 +224,7 @@ public:
         using boost::asio::buffer;
         test_parser<isRequest> p;
         if(skipBody)
-            p.set_option(skip_body{true});
+            p.skip_body();
         error_code ec;
         auto const n = feed(buffer(
             s.data(), s.size()), p, ec);
@@ -256,7 +256,7 @@ public:
         using boost::asio::buffer;
         test_parser<isRequest> p;
         if(skipBody)
-            p.set_option(skip_body{true});
+            p.skip_body();
         error_code ec;
         feed(buffer(
             s.data(), s.size()), p, ec);

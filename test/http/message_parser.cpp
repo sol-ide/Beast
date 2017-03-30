@@ -195,7 +195,7 @@ public:
                 "HTTP/1.1 200 Connection Established\r\n"
                 "Proxy-Agent: Zscaler/5.1\r\n"
                 "\r\n";
-            p.set_option(skip_body{true});
+            p.skip_body();
             p.write(buffer(s), ec);
             BEAST_EXPECTS(! ec, ec.message());
             BEAST_EXPECT(p.is_complete());

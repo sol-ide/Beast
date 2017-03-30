@@ -20,80 +20,6 @@
 namespace beast {
 namespace http {
 
-/** Body maximum size option.
-
-    Sets the maximum number of cumulative bytes allowed including
-    all body octets. Octets in chunk-encoded bodies are counted
-    after decoding. A value of zero indicates no limit on
-    the number of body octets.
-
-    The default body maximum size for requests is 4MB (four
-    megabytes or 4,194,304 bytes) and unlimited for responses.
-
-    @note Objects of this type are used with @ref basic_parser::set_option.
-*/
-struct body_max_size
-{
-    std::size_t value;
-
-    explicit
-    body_max_size(std::size_t v)
-        : value(v)
-    {
-    }
-};
-
-/** Header maximum size option.
-
-    Sets the maximum number of cumulative bytes allowed
-    including all header octets. A value of zero indicates
-    no limit on the number of header octets.
-
-    The default header maximum size is 16KB (16,384 bytes).
-
-    @note Objects of this type are used with @ref basic_parser::set_option.
-*/
-struct header_max_size
-{
-    std::size_t value;
-
-    explicit
-    header_max_size(std::size_t v)
-        : value(v)
-    {
-    }
-};
-
-/** Skip body option.
-
-    The option controls whether or not the parser expects to see a
-    HTTP body, regardless of the presence or absence of certain fields
-    such as Content-Length.
-
-    Depending on the request, some responses do not carry a body.
-    For example, a 200 response to a CONNECT request from a tunneling
-    proxy. In these cases, callers use the @ref skip_body option to
-    inform the parser that no body is expected. The parser will consider
-    the message complete after the header has been received.
-
-    Example:
-    @code
-        parser<true> p;
-        p.set_option(skip_body{true});
-    @endcode
-    @note Objects of this type are passed to @ref basic_parser::set_option.
-*/
-struct skip_body
-{
-    bool value;
-
-    explicit
-    skip_body(bool v)
-        : value(v)
-    {
-    }
-};
-
 /** Describes the parser's current state.
 
     The state is expressed as the type of data that
@@ -353,17 +279,22 @@ public:
     basic_parser(basic_parser<
         isRequest, OtherIsDirect, OtherDerived>&&);
 
-    /// Set the @ref beast::http::body_max_size option
-    void
-    set_option(body_max_size const& o);
+    /** Set the skip body option.
 
-    /// Set the @ref beast::http::header_max_size option
-    void
-    set_option(header_max_size const& o);
+        The option controls whether or not the parser expects to
+        see an HTTP body, regardless of the presence or absence of
+        certain fields such as Content-Length.
 
-    /// Set the @ref beast::http::skip_body option.
+        Depending on the request, some responses do not carry a body.
+        For example, a 200 response to a CONNECT request from a
+        tunneling proxy. In these cases, callers may use this function
+        inform the parser that no body is expected. The parser will
+        consider the message complete after the header has been received.
+
+        @note This function must called before any bytes are processed.
+    */
     void
-    set_option(skip_body const& opt);
+    skip_body();
 
     /** Returns the current parser state.
 
@@ -405,7 +336,7 @@ public:
         The message is complete after a full header is
         parsed and one of the following is true:
 
-        @li The @ref beast::http::skip_body option is set
+        @li @ref skip_body was called
 
         @li The semantics of the message indicate there is no body.
 
