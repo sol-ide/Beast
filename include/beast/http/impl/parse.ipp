@@ -343,13 +343,15 @@ operator()(error_code ec,
             }
             else if(! ec)
             {
-                d.db.commit(bytes_transferred);
+                d.p.commit_body(bytes_transferred);
             }
             goto upcall;
         }
     }
 upcall:
-    d_.invoke(ec, d.bytes_used);
+    // can't pass any members of `d` otherwise UB
+    auto const bytes_used = d.bytes_used;
+    d_.invoke(ec, bytes_used);
 }
 
 //------------------------------------------------------------------------------
