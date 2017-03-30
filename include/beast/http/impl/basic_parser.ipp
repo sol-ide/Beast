@@ -1031,7 +1031,10 @@ parse_chunk_body(char const* p,
         return 0;
     len_ -= n;
     if(len_ == 0)
+    {
+        body_ = {};
         state_ = parse_state::chunk_header;
+    }
     return n;
 }
 

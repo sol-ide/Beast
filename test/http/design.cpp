@@ -341,7 +341,7 @@ public:
         do
         {
       	    auto const state0 = parser.state();
-            auto const bytes_parsed =
+            auto const bytes_used =
                 parse_some(in, buffer, parser, ec);
             BEAST_EXPECTS(! ec, ec.message());
             switch(state0)
@@ -379,7 +379,7 @@ public:
             case parse_state::complete:
                 break;
             }
-            buffer.consume(bytes_parsed);
+            buffer.consume(bytes_used);
         }
         while(! parser.is_complete());
     }
@@ -446,38 +446,17 @@ public:
     {
         flat_streambuf buffer{4096, 4096}; // 4K size, 4K limit
         header_parser<isRequest, fields> parser;
-        error_code ec;
+        std::size_t bytes_used;
+        bytes_used = parse_some(stream, buffer, parser);
+        BEAST_EXPECT(parser.got_header());
+        buffer.consume(bytes_used);
         do
         {
-      	    auto const state0 = parser.state();
-            auto const bytes_parsed =
+            bytes_used =
                 parse_some(stream, buffer, parser);
-            switch(state0)
-            {
-            case parse_state::header:
-            {
-                BEAST_EXPECT(parser.got_header());
-                break;
-            }
-
-            case parse_state::chunk_header:
-            {
-                // inspect parser.chunk_extension() here
-                break;
-            }
-
-            case parse_state::body:
-            case parse_state::body_to_eof:
-            case parse_state::chunk_body:
-            {
+            if(! parser.body().empty())
                 cb(parser.body());
-                break;
-            }
-          
-            case parse_state::complete:
-                break;
-            }
-            buffer.consume(bytes_parsed);
+            buffer.consume(bytes_used);
         }
         while(! parser.is_complete());
     }
@@ -546,7 +525,6 @@ public:
         testExpect100Continue();
         testRelay();
         testFixedRead();
-        //testFixedRead2();
     }
 };
 
