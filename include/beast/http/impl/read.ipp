@@ -69,8 +69,7 @@ public:
     }
 
     void
-    operator()(error_code ec,
-        std::size_t bytes_used, bool again = true);
+    operator()(error_code ec, bool again = true);
 
     friend
     void* asio_handler_allocate(
@@ -108,24 +107,22 @@ template<class Stream, class DynamicBuffer,
         class Handler>
 void
 read_op<Stream, DynamicBuffer, isRequest, Body, Fields, Handler>::
-operator()(error_code ec, std::size_t bytes_used, bool again)
+operator()(error_code ec, bool again)
 {
     auto& d = *d_;
     d.cont = d.cont || again;
-    while(! ec && d.state != 99)
+    if(ec)
+        goto upcall;
+    switch(d.state)
     {
-        switch(d.state)
-        {
         case 0:
             d.state = 1;
-            async_parse_some(d.s, d.db, d.p, std::move(*this));
+            async_parse(d.s, d.db, d.p, std::move(*this));
             return;
 
         case 1:
-            d.db.consume(bytes_used);
             d.m = d.p.release();
             goto upcall;
-        }
     }
 upcall:
     d_.invoke(ec);
