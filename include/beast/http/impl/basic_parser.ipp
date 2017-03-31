@@ -135,12 +135,15 @@ copy_body(DynamicBuffer& dynabuf)
     {
     case parse_state::body_to_eof:
     {
-        auto const n = dynabuf.size();
         auto const buffers =
-            impl().on_prepare(n);
-        BOOST_ASSERT(buffer_size(buffers) == n);
-        dynabuf.consume(buffer_copy(
-            buffers, dynabuf.data()));
+            impl().on_prepare(dynabuf.size());
+        BOOST_ASSERT(
+            buffer_size(buffers) >= 1 &&
+            buffer_size(buffers) <=
+                dynabuf.size());
+        auto const n = buffer_copy(
+            buffers, dynabuf.data());
+        dynabuf.consume(n);
         impl().on_commit(n);
         return n;
     }
@@ -151,7 +154,10 @@ copy_body(DynamicBuffer& dynabuf)
         auto const buffers =
             impl().on_prepare(
                 beast::detail::clamp(len_));
-        BOOST_ASSERT(buffer_size(buffers) > 0);
+        BOOST_ASSERT(
+            buffer_size(buffers) >= 1 &&
+            buffer_size(buffers) <=
+                beast::detail::clamp(len_));
         auto const n = buffer_copy(
             buffers, dynabuf.data());
         commit_body(n);
@@ -207,6 +213,7 @@ commit_body(std::size_t n)
         len_ -= n;
         if(len_ == 0)
         {
+            // VFALCO This is no good, throwing out ec?
             error_code ec;
             do_complete(ec);
         }

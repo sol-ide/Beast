@@ -512,6 +512,10 @@ public:
 
         @note This member function is only available when
         `isDirect==true`.
+
+        @param limit The maximum number of bytes in the
+        size of the returned buffer sequence. The actual size
+        of the buffer sequence may be lower than this number.
     */
     template<class MutableBufferSequence>
     void

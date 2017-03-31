@@ -106,8 +106,9 @@ In the tables below:
     [`mutable_buffers_type`]
     [
         The implementation calls this function to obtain a mutable
-        buffer sequence of size exactly `n` bytes in which to place
-        data corresponding to the body.
+        buffer sequence of up to `n` bytes in size in which to place
+        data corresponding to the body. The buffer returned must
+        be at least one byte in size, and may be smaller than `n`.
     ]
 ]
 [
@@ -117,8 +118,8 @@ In the tables below:
         The implementation calls this function to indicate to the
         reader that `n` bytes of data have been successfully placed
         into the buffer obtained through a prior call to `prepare`.
-        The value of `n` will be less than or equal to the value
-        used in the previous call to `prepare`.
+        The value of `n` will be less than or equal to the size of
+        the buffer returned  in the previous call to `prepare`.
     ]
 ]
 [
