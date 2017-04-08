@@ -33,13 +33,11 @@ else()
       "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -Wpedantic -Wno-unused-parameter -DBOOST_COROUTINES_NO_DEPRECATION_WARNING=1")
 endif()
 
-set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 
 find_package(Boost REQUIRED COMPONENTS coroutine context thread filesystem program_options system)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIR})
-
 
 add_definitions ("-DBOOST_COROUTINES_NO_DEPRECATION_WARNING")
 
