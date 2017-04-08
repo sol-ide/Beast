@@ -151,7 +151,7 @@ public:
                 `false` when there may be more data.
     */
     template<class WriteFunction>
-    boost::tribool
+    bool
     write(
         error_code&,
         WriteFunction&& wf) noexcept;
